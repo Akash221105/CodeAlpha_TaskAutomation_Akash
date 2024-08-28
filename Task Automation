@@ -1,0 +1,48 @@
+import os
+import shutil
+
+# Define the source folder (the folder to organize)
+source_folder = 'path'
+
+# Define the destination folders based on file extensions
+dest_folders = {
+    'Images': ['.jpg', '.jpeg', '.png', '.gif', '.bmp'],
+    'Documents': ['.pdf', '.doc', '.docx', '.txt', '.xls', '.xlsx', '.ppt', '.pptx'],
+    'Music': ['.mp3', '.wav', '.aac', '.flac'],
+    'Videos': ['.mp4', '.avi', '.mkv', '.mov'],
+    'Archives': ['.zip', '.tar', '.gz', '.rar'],
+    'Scripts': ['.py', '.js', '.html', '.css'],
+    'Others': []  # Any other files that don't fit into the above categories
+}
+
+def create_folders(base_folder, folders_dict):
+    for folder in folders_dict.keys():
+        folder_path = os.path.join(base_folder, folder)
+        if not os.path.exists(folder_path):
+            os.makedirs(folder_path)
+
+def move_files_to_folders(base_folder, folders_dict):
+    for filename in os.listdir(base_folder):
+        file_path = os.path.join(base_folder, filename)
+        
+        if os.path.isfile(file_path):
+            moved = False
+            for folder, extensions in folders_dict.items():
+                if any(filename.lower().endswith(ext) for ext in extensions):
+                    shutil.move(file_path, os.path.join(base_folder, folder, filename))
+                    print(f"Moved: {filename} -> {folder}")
+                    moved = True
+                    break
+            
+            if not moved:
+                shutil.move(file_path, os.path.join(base_folder, 'Others', filename))
+                print(f"Moved: {filename} -> Others")
+
+if __name__ == "__main__":
+    # Create destination folders if they don't exist
+    create_folders(source_folder, dest_folders)
+    
+    # Move files into the appropriate folders
+    move_files_to_folders(source_folder, dest_folders)
+
+    print("File organization complete!")
